@@ -1,0 +1,19 @@
+[package]
+name = "livestreamer-IB"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bcrypt = "0.15.1"
+gstreamer = "0.23.3"
+rand = "0.8.5"
+rocket = {version = "0.5.1", features = ["secrets"]}
+rocket_db_pools = {version = "0.2.0", features = ["sqlx_sqlite"]}
+rocket_dyn_templates = {version = "0.2.0", features = ["minijinja"]}
+rocket_ws = "0.1.1"
+sqlx = {version="0.7.4", features = ["macros", "migrate"], default-features = false}
+
+[profile.dev]
+panic = 'abort'
+[profile.release]
+panic = 'abort'

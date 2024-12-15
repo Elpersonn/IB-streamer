@@ -1,0 +1,37 @@
+
+#stream {
+    min-width: 60vw;
+    max-width: 75vw;
+}
+#chatbox {
+    display: flex;
+    float: right;
+    height: 83.5vh;
+    width: 23.5vw;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: green;
+    flex-direction: column;
+}
+.chatmessage {
+    max-height: 10vh;
+    width: 100%;
+    min-height: 5vh;
+    padding: 0px;
+    background-color: black;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: white;
+}
+.chatmessage p {
+    margin-top: auto;
+    margin-left: 3px;
+}
+#inputform {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    margin-top: auto;
+    width: 100%;
+
+}

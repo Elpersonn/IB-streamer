@@ -1,0 +1,29 @@
+{% extends "base" %}
+
+{% block head %}
+<link rel="stylesheet" href="files/css/index.css"/>
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/hls.js@1" defer></script>
+<script src="/files/js/index.js" defer></script>
+
+{% endblock %}
+{% block body %}
+<video id="stream" poster="/files/img/black.png" controls></video>
+<div id="chatbox">
+    
+    <form id="inputform">
+        <input disabled class="input" placeholder="Press ENTER to send." label="chatinput" id="chatinput" type="text">
+    </form>
+</div>
+<div id="info" class="content">
+    <h1> {{ stream_title }} </h1>
+    <p> {{ stream_description }} </p>
+</div>
+
+
+<template id="chatmessage">
+<div class="chatmessage">
+        <p><span style="color:green"></span></p>
+</div>
+</template>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base" %}
+
+{% block head %}
+<link rel="stylesheet" href="files/css/login.css"/>
+<script src="/files/js/register.js" defer></script>
+{% endblock %}
+{% block body %}
+<form id="loginbox" class="box mt-auto">
+        <div class="field">
+            <label class="label">Username</label>
+            <div class="control">
+                <input class="input" id="username" type="text" />
+            </div>
+        </div>
+        <div class="field" >
+            <label class="label">Password</label>
+            <div class="control">
+                <input class="input" id="password" type="password" />  
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">Confirm password</label>
+            <div class="control">
+                <input class="input" id="confpassword" type="password"/>
+            </div>
+        </div>
+        <br>
+        <button class="button is-primary" type="button" id="loginbtn">Register</button>
+    </form>
+{% endblock %}

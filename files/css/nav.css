@@ -1,0 +1,24 @@
+li {
+    margin-right: auto;
+    position: relative;
+    margin-left: 0;
+    
+}
+.align-right {
+    float: right;
+}
+nav a {
+    padding: 10px;
+    background-color: rgb(41, 234, 57);
+    font-size: 4.2vh;
+    text-decoration: none;
+}
+nav a + a {
+    margin-left: 20px;
+}
+#navbar {
+    margin-top: 0;
+    height: 8vh;
+    padding-left: 0;
+    background-color: gray;
+}

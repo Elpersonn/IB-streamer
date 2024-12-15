@@ -1,0 +1,18 @@
+<nav class="navbar">
+    <div class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item" href="/">MyStream</a>
+        </div>
+        <div class="navbar-end">
+        {% if logged_in  %}
+            <a class="navbar-item" onclick="logout()">Logout</a>
+        {% else %}
+            <a class="navbar-item" href="/login">Login</a>
+            <a class="navbar-item" href="/register">Register</a>
+        {% endif %}
+            
+        </div>
+    </div>
+    
+    
+</nav>
