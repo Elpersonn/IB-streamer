@@ -4,6 +4,14 @@
 <link rel="stylesheet" href="files/css/index.css"/>
 
 <script type="module" src="https://cdn.jsdelivr.net/npm/hls.js@1" defer></script>
+<script>
+{% if logged_in %}
+    const logged_in = true
+{% else %}
+    const logged_in = false
+{% endif %}
+</script>
+
 <script src="/files/js/index.js" defer></script>
 
 {% endblock %}

@@ -1,26 +1,33 @@
 #[macro_use] extern crate rocket;
+use gstreamer::glib::g_printerr;
 use gstreamer::query;
 use rocket::figment::Profile;
 use rocket::fs::{self, FileServer};
-use rocket::futures::future::err;
-use rocket::futures::TryFutureExt;
-use rocket::{Config, Error, Rocket};
+use rocket::futures::future::{self, err};
+use rocket::futures::stream::Next;
+use rocket::futures::{channel, FutureExt, TryFutureExt, TryStreamExt};
+use rocket::tokio::sync::broadcast::{channel, Sender};
+use rocket::{Config, Error, Rocket, State};
 use rocket::form::Form;
+use rocket::futures::{SinkExt, StreamExt, Stream, Sink};
 use rocket::http::Status;
 use rocket::http::{Cookie, CookieJar};
-use rocket_ws::{WebSocket, Stream};
+use rocket_ws::{Channel, Message, Stream, WebSocket};
 use rocket_dyn_templates::*;
 use rocket_db_pools::{sqlx, Database};
 use sqlx::Executor;
 use sqlx::Value;
 use sqlx::Row;
+use tokio::select;
 use std::net::{IpAddr, Ipv4Addr};
-use std::panic;
+use std::rc::Weak;
+use std::{option, panic, sync};
 use std::str::FromStr;
-use std::sync::LazyLock;
+use std::sync::{Arc, LazyLock};
 use std::sync::mpsc;
 use std::thread;
 use std::time;
+use std::collections::HashMap;
 use bcrypt;
 use rand;
 
@@ -50,10 +57,8 @@ struct LoginData {
     password: String
 }
 
-
-
 #[get("/chat")]
-async fn chat(ws: WebSocket, jar: &CookieJar<'_>, db: &Logs) -> Result<Stream!['static], Status> {
+async fn chat<'a>(ws: WebSocket, jar: &CookieJar<'_>, db: &Logs, queue: &'a State<Sender<String>>) -> Result<Channel<'a>, Status> {
     let cookie = jar.get("session");
     if cookie.is_some() {
         let querydata = sqlx::query(sql::GET_SESSION_BYID)
@@ -71,7 +76,66 @@ async fn chat(ws: WebSocket, jar: &CookieJar<'_>, db: &Logs) -> Result<Stream!['
     } else { 
         return Err(Status::Unauthorized); 
     }
-    Ok(ws.stream(|io| io))
+
+    
+    Ok(ws.channel(move |mut stream| Box::pin(async move {
+        let mut rx= queue.subscribe();
+        //let mut nextval: Option<tokio::task::JoinHandle<Option<Result<Message, rocket_ws::result::Error>>>> = None;
+        loop {
+            
+            select! {
+                msg = stream.next() => {
+                    let msg = msg.unwrap().unwrap();
+                    match msg {
+                        Message::Text(text) => {
+                            let _ = queue.send(text);
+                        }
+                        Message::Ping(p) => {
+                            let _ = stream.send(Message::Pong(vec![1])).await;
+                        }
+                        _ => {
+    
+                        }
+                    }
+                }
+                recv = rx.recv() => {
+                    match recv {
+                        Ok(s) => {
+                            let _ = stream.send(Message::text(s)).await;
+                        }
+                        _ => {
+        
+                        }
+                    }
+                }
+            }
+
+            /*if nextval.is_none() {
+                nextval = Some(tokio::task::spawn(async move {
+                    return stream.next().await;
+                }));
+            }
+            let nexthandle = nextval.unwrap();
+            if nexthandle.is_finished() {
+                let message = nexthandle.await;
+                let message = message.unwrap().unwrap().unwrap();
+                match message {
+                    Message::Text(text) => {
+                        queue.send(text);
+                    }
+                    Message::Ping(p) => {
+                        stream.send(Message::Pong(vec![1]));
+                    }
+                    _ => {
+
+                    }
+                }
+            }*/
+            
+            
+            
+        }
+    } )))
 }
 
 
@@ -192,10 +256,12 @@ fn rocket() -> _ {
     }
     let g_thread = g_thread.unwrap().thread();
     rocket::build()
-    .mount("/", routes![index, login, register, postLogin, postRegister])
+    .mount("/", routes![index, login, register, postLogin, postRegister, chat])
     .attach(Logs::init())
     .attach(Template::fairing())
     .mount("/files", FileServer::new(fs::relative!("files"), fs::Options::None))
     .manage(tx)
+    .manage(channel::<String>(1024).0)
+    //.manage(Arc::new(sync::Mutex::new(HashMap::<String, &WebSocket>::new())))
 
 }

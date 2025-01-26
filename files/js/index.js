@@ -1,5 +1,8 @@
 const VIDEOSRC = "files/hls/playlist.m3u8"
 const TEMPLATE = document.getElementById("chatmessage")
+
+let socket = undefined
+
 /* class ChatMessage extends HTMLElement {
     constructor(author, message) {
         super()
@@ -31,6 +34,10 @@ function logout() {
 }
 function onEnter(ev) {
     ev.preventDefault()
+    if (socket != undefined) {
+        socket.send(document.getElementById("chatinput").value)
+        document.getElementById("chatinput").value = ""
+    }
 }
 
 
@@ -44,19 +51,25 @@ if (Hls.isSupported()) {
     hls.attachMedia(stream)
     hls.on(Hls.Events.FRAG_LOADED, function (d) {
         document.getElementById("chatinput").removeAttribute("disabled")
+        if (socket == undefined) {
+            socket = new WebSocket("/chat")
+            socket.onmessage = (ev) => {
+                addMessage("test", ev.data)
+            }
+            socket.onopen = (ev) => {
+                addMessage("SYSTEM", "Welcome to the live chat! Remember to follow the rules!")
+            }
+            socket.onclose = (ev) => {
+                console.warn(ev)
+            }
+            socket.onerror = (ev) => {
+                console.warn(ev)
+            }
+        }
     })
 } else alert("HLS not supported!")
 
 let elem = document.getElementById("chatinput")
 if (!elem.hasAttribute("disabled")) {
-    let socket = new WebSocket("/chat")
-    socket.onopen = (ev) => {
-        addMessage("SYSTEM", "Welcome to the live chat! Remember to be respectful and follow the rules!")
-    }
-    socket.onclose = (ev) => {
-        alert(ev)
-    }
-    socket.onerror = (ev) => {
-        alert(ev)
-    }
+    
 }

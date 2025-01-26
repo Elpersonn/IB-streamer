@@ -12,6 +12,7 @@ rocket_db_pools = {version = "0.2.0", features = ["sqlx_sqlite"]}
 rocket_dyn_templates = {version = "0.2.0", features = ["minijinja"]}
 rocket_ws = "0.1.1"
 sqlx = {version="0.7.4", features = ["macros", "migrate"], default-features = false}
+tokio = "1.43.0"
 
 [profile.dev]
 panic = 'abort'
