@@ -1,10 +1,8 @@
-use gstreamer::{self, ffi::gst_allocation_params_init, prelude::*, Fraction, Pad};
-use std::{env, rc::Rc, sync::mpsc};
+use gstreamer::{self, prelude::*, Pad};
+use std::{env, sync::mpsc};
 
 use crate::util::{self, MessageType};
-fn createbins() {
 
-}
 
 
 pub fn initStream(rx: mpsc::Receiver<util::MessageType>) {
@@ -24,6 +22,8 @@ pub fn initStream(rx: mpsc::Receiver<util::MessageType>) {
 
     srt_src.set_property("uri", "srt://127.0.0.1:7001?mode=listener"); 
     srt_src.set_property("keep-listening", true);
+    srt_src.set_property("authentication", true);
+    srt_src.set_property("streamid", "penis");
     hls_sink.set_property("playlist-location", playlist_path.to_str().unwrap());
     hls_sink.set_property("max-files", 7u32);
     
@@ -33,14 +33,23 @@ pub fn initStream(rx: mpsc::Receiver<util::MessageType>) {
     hls_sink.set_property("location", playlist_path.to_str().unwrap());
     hls_sink.set_property("target-duration", 3u32);
     let h264pad = h264parse.static_pad("sink").unwrap();
-    
+
     tsdemux.connect_pad_added(move |_, pad: &Pad| {
         if pad.name().starts_with("video") {
             pad.link(&h264pad).unwrap();
         }
     });
+    /*srt_src.connect_closure("caller-connecting", false, gstreamer::glib::RustClosure::new(|values| {
+        let streamid: String = values[2].get::<String>().unwrap();
+        let element = values[0].get::<gstreamer::Element>().unwrap();
+        println!("{}", streamid);
+        if streamid == element.property::<String>("streamid") {
+            println!("ALLOWED");
+            return Some(gstreamer::glib::Value::from(true));
+        } 
+        Some(gstreamer::glib::Value::from(false))
+    })); */
 
-    
     pipeline.add_many([&srt_src, &tsdemux, &h264parse, &mpegts, &hls_sink]).unwrap();
 
     let mpeg_pad = mpegts.request_pad_simple("sink_%d").unwrap();
@@ -55,9 +64,11 @@ pub fn initStream(rx: mpsc::Receiver<util::MessageType>) {
             MessageType::STARTSTREAM => {
                 pipeline.set_state(gstreamer::State::Playing).unwrap();
             },
-            MessageType::STOPSTREAM => { pipeline.set_state(gstreamer::State::Null).unwrap();},
+            MessageType::STOPSTREAM => { pipeline.set_state(gstreamer::State::Null).unwrap(); },
             MessageType::KEYCHANGE(streamid) => {
+                srt_src.set_state(gstreamer::State::Null);
                 srt_src.set_property("streamid", streamid);
+                srt_src.set_state(gstreamer::State::Playing);
             }
         }
     }

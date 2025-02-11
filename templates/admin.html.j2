@@ -1,0 +1,47 @@
+{% extends "adminbase" %}
+
+{% block head %}
+<link rel="stylesheet" href="files/css/admin.css"/>
+<script src="/files/js/admin.js" defer></script>
+{% endblock head %}
+{% block body %}
+<div id="fieldholder">
+
+</div>
+<div class="field is-horizontal" id="keyform">
+  <div class="field-label is-normal">
+    <label class="label">Stream Key</label>
+  </div>
+  <div class="field-body">
+    <div class="field">
+        <p class="control">
+          <input class="input" type="text"  id="streamkey" readonly value="{{ stream_key }}" />
+        </p>
+    </div>
+    <div class="field">
+        <p class="control">
+          <button class="is-danger button" id="resetbtn">Reset</button>
+        </p>
+    </div>
+  </div>
+</div>
+<div class="field is-horizontal" id="keyform">
+  <div class="field-label is-normal">
+    <label class="label">Stream title</label>
+  </div>
+  <div class="field-body">
+    <div class="field">
+        <p class="control">
+          <input class="input" type="text"  id="title" value="{{ stream_title }}" />
+        </p>
+    </div>
+    <div class="field">
+        <p class="control">
+          <button class="is-primary button" id="titlebtn">Set Title & Desc.</button>
+        </p>
+    </div>
+  </div>
+</div>
+<label class="label" for="description">Stream Description</label>
+<textarea class="textarea" id="description">{{ stream_description }}</textarea>
+{% endblock body %}

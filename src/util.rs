@@ -18,7 +18,7 @@ pub fn timeNow() -> u64 {
 }
 #[cfg(debug_assertions)]
 pub fn get_workdir() -> String {
-    std::env::var("CARGO_MANIFEST").unwrap()
+    std::env::var("CARGO_MANIFEST_DIR").unwrap()
 }
 
 #[cfg(not(debug_assertions))]

@@ -54,7 +54,8 @@ if (Hls.isSupported()) {
         if (socket == undefined) {
             socket = new WebSocket("/chat")
             socket.onmessage = (ev) => {
-                addMessage("test", ev.data)
+                let split = ev.data.toString().split(":")
+                addMessage(split[0], split[1])
             }
             socket.onopen = (ev) => {
                 addMessage("SYSTEM", "Welcome to the live chat! Remember to follow the rules!")

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<head>
+    <title> </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    {% block head %}
+    {% endblock head %}
+</head>
+
+<body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-start">
+            <h2 class="navbar-item">Administration Panel</h2>
+        </div>
+        <div class="navbar-end">
+            <a class="navbar-item" href="/admin">Main</a>
+            <a class="navbar-item" href="/admin/css">CSS</a>
+        </div>
+    </nav>
+    {% block body %}
+    {% endblock body %}
+</body>
