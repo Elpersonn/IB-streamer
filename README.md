@@ -10,3 +10,7 @@ Uploaded mostly so that you can get inspired or something... idk
 1. [Install Gstreamer development kit](https://gstreamer.freedesktop.org/download/#windows)
 2. `cargo run` in your command line
 3. Start streaming by setting OBS to "Custom" and enter `srt://127.0.0.1:7001`
+
+
+## Troubleshooting
+Create an issue and I'll update this doc, I wrote this readme from memory so I might've missed something.
